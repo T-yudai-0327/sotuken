@@ -5,122 +5,103 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    box-sizing: border-box; /* ボックスのサイズ計算を一貫させる */
 }
 
 /* h1タイトルのデザイン */
 h1 {
     color: #333;
-    font-size: 48px;
-    margin-top: 50px;
+    font-size: 36px; /* フォントサイズを少し小さく */
+    margin-top: 20px; /* 上の余白を減らす */
+    margin-bottom: 10px; /* 下の余白も減らす */
+    line-height: 1.2; /* タイトルの行間を調整 */
 }
 
 /* h2サブタイトルのデザイン */
 h2 {
     color: #666;
-    font-size: 32px;
-    margin-bottom: 30px;
+    font-size: 24px; /* フォントサイズを調整 */
+    margin-bottom: 15px; /* 下の余白を減らす */
+    line-height: 1.3; /* 行間を調整 */
 }
 
-/* div内のボタンを囲むボックスのスタイル */
+/* ボタンを囲むボックスのスタイル */
 div {
     display: inline-block;
-    padding: 30px;
+    padding: 15px; /* 内側の余白を少し減らす */
     border: 2px solid #333; /* ボックスを黒い線で囲む */
-    border-radius: 15px; /* 角を丸める */
+    border-radius: 10px; /* 角を少し丸める */
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ボックスに影を追加 */
+    margin: 20px auto; /* 上下の余白を適度に設定 */
+    max-width: 90%; /* ボックスの幅を調整しレスポンシブに対応 */
+    text-align: center;
 }
 
 /* ボタンのスタイル */
 button {
-    font-size: 18px;
-    padding: 15px 30px;
-    margin: 10px;
+    font-size: 16px; /* フォントサイズを少し小さく */
+    padding: 10px 20px; /* ボタンの内側の余白を調整 */
+    margin: 5px; /* ボタン間の余白を調整 */
     background-color: #4CAF50; /* ボタンの背景色 */
     color: white; /* ボタンの文字色 */
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s; /* ホバー時にアニメーション */
 }
 
 /* ボタンホバー時のスタイル */
 button:hover {
     background-color: #45a049; /* ホバー時に色を少し変える */
-}
-
-/* リンクのスタイルをリセット */
-a {
-    text-decoration: none;
+    transform: scale(1.05); /* ホバー時に少し大きくする */
 }
 
 /* 説明ボックスのスタイル */
 .description-box {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 700px; /* ボックスの最大幅を縮める */
+    margin: 20px auto; /* 上下の余白を調整 */
+    padding: 15px; /* 内側の余白を減らす */
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
-    line-height: 1.6;
+    line-height: 1.6; /* 行間を調整 */
+    word-wrap: break-word; /* テキストが長すぎた場合に折り返す */
 }
 
 /* 画像ボックスのスタイル */
 .image-box {
-    margin: 30px auto;
+    margin: 20px auto; /* 上下の余白を調整 */
+    padding: 0; /* 内側の余白をリセット */
     text-align: center;
+    max-width: 100%; /* 画像ボックスの最大幅を100%に設定 */
+}
+
+/* 画像自体のスタイル */
+.image-box img {
+    display: block;
+    max-width: 100%; /* 画像をボックスの幅に収める */
+    height: auto; /* アスペクト比を維持する */
+    margin: 0 auto; /* 画像の周りの余白をリセット */
+    border: none; /* 画像のボーダーを削除 */
+    padding: 0; /* 画像の内側の余白をリセット */
 }
 
 /* フッターボタンのスタイル */
 footer button {
-    font-size: 18px;
-    padding: 10px 20px;
+    font-size: 16px; /* フォントサイズを少し小さく */
+    padding: 8px 16px; /* ボタンの内側の余白を減らす */
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 footer button:hover {
     background-color: #45a049;
+    transform: scale(1.05);
 }
-
-/* 説明ボックスのスタイル */
-.description-box {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    line-height: 1.6;
-}
-
-/* 画像ボックスのスタイル */
-.image-box {
-    margin: 30px auto;
-    text-align: center;
-}
-
-/* フッターボタンのスタイル */
-footer button {
-    font-size: 18px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-footer button:hover {
-    background-color: #45a049;
-}
-
