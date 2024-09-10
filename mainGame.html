@@ -8,7 +8,7 @@
 <body>
 
 <div class="wrapper">
-    <button id="start">スタート</button>
+    <button id="start">スタート</button> <!-- スタートボタン -->
     <table>
         <tr>
             <td id="score">0</td>
@@ -51,6 +51,9 @@ var drowCount= 0;
 
 // スタートボタンと同じ処理を自動で実行
 async function startGame() {
+    // スタートボタンを非表示にする
+    document.getElementById("start").style.display = "none";
+    
     response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,JS,QS,KS,AD,2D,3D,4D,5D,6D,7D,8D,9D,10D,JD,QD,KD,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,JC,QC,KC,2H,3H,4H,5H,6H,7H,8H,9H,10H");
     var startCard = await response.json();
     deck_id = startCard.deck_id;
