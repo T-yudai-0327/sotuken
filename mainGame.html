@@ -1,113 +1,102 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Scoundrel</title>
+    <meta charset="UTF-8">
+    <title>Scoundrel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <div class="wrapper">
-<button id="start">スタート</button>
-<table>
-  <tr>
-    <td id ="score">0</td>
-    <td id="rule">ルール確認</td>
-  </tr>
-  <tr>
-    <td id="HPNum">HP</td>
-    <td id="HPBar">■■■■■■■■■■■■■■■■■■■■</td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <td id="1" height="314"></td>
-    <td id="2"></td>
-    <td id="3"></td>
-    <td id="4"></td>
-  </tr>
-  <tr>
-    <td id="reset" height="314"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
-    <td id="weapon"><img src=""></td>
-    <td id="no"></td>
-    <td id="killCards" style="background-color:#dcdcdc; border-radius:10px;"></td>
-  </tr>
-</table>
+    <button id="start">スタート</button>
+    <table>
+        <tr>
+            <td id="score">0</td>
+            <td id="rule">ルール確認</td>
+        </tr>
+        <tr>
+            <td id="HPNum">HP</td>
+            <td id="HPBar">■■■■■■■■■■■■■■■■■■■■</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td id="1" height="314"></td>
+            <td id="2"></td>
+            <td id="3"></td>
+            <td id="4"></td>
+        </tr>
+        <tr>
+            <td id="reset" height="314"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
+            <td id="weapon"><img src=""></td>
+            <td id="no"></td>
+            <td id="killCards" style="background-color:#dcdcdc; border-radius:10px;"></td>
+        </tr>
+    </table>
 </div>
+
+<script>
+// スタートボタンと同じ処理を自動で実行
+async function startGame() {
+    var rooms = new Array(4);
+    var response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,JS,QS,KS,AD,2D,3D,4D,5D,6D,7D,8D,9D,10D,JD,QD,KD,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,JC,QC,KC,2H,3H,4H,5H,6H,7H,8H,9H,10H");
+    var startCard = await response.json();
+    var deck_id = startCard.deck_id;
+    console.log(deck_id);
+
+    // シャッフル
+    await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/shuffle/?remaining=true");
+
+    // 初回ドロー
+    response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
+    var room = await response.json();
+    console.log("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
+
+    // 4枚のカードを描画
+    for (var i = 0; i < 4; i++) {
+        rooms[i] = room.cards[i].code;
+        var cardImage = document.createElement("img");
+        var roomDiv = document.getElementById(i+1);
+        cardImage.src = room.cards[i].image;
+        roomDiv.appendChild(cardImage);
+        console.log(rooms[i]);
+    }
+}
+
+// ページがロードされた時、自動でスタートボタンを押す処理をチェック
+window.onload = function() {
+    // URLのクエリパラメータを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('autoStart') === 'true') {
+        // autoStartがtrueなら、スタートボタンの処理を実行
+        startGame();
+    }
+
+    // 通常のスタートボタンのクリック処理
+    document.getElementById("start").addEventListener("click", startGame);
+};
+
+document.getElementById("reset").addEventListener("click", async () => {
+    console.log("ルーム再抽出");
+    resetCount = 2;
+    for (var i = 0; i < 4; i++) {
+        var roomDiv = document.getElementById(i + 1);
+        roomDiv.innerHTML = "";
+    }
+    response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/return/?cards=" + rooms[0] + "," + rooms[1] + "," + rooms[2] + "," + rooms[3]);
+    response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
+    var room = await response.json();
+
+    for (var i = 0; i < 4; i++) {
+        rooms[i] = room.cards[i].code;
+        var cardImage = document.createElement("img");
+        var roomDiv = document.getElementById(i + 1);
+        cardImage.src = room.cards[i].image;
+        roomDiv.appendChild(cardImage);
+    }
+    console.log("残りカード数　" + room.remaining);
+});
+</script>
 
 </body>
 </html>
-
-
-
-<script>
-var rooms = new Array(4);
-var hp = 20;
-var resetCount = 0; //ルーム引き直し時2 どれか一つを選択した時1 次のターン開始時に値を-1
-var weapon = 0;
-var kill = 99; //倒した敵の数値
-var score = 0;
-
-var deck_id = "";
-var cardImage = document.createElement("img");
-var response = "";
-
-///////////////////////////////////////////////////この部分///////////////////////////////////////////////
-document.getElementById("start").addEventListener("click", async () => {
-  //山札生成
-  response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,JS,QS,KS,AD,2D,3D,4D,5D,6D,7D,8D,9D,10D,JD,QD,KD,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,JC,QC,KC,2H,3H,4H,5H,6H,7H,8H,9H,10H");
-  var startCard = await response.json();
-  deck_id = startCard.deck_id;
-console.log(deck_id);
-  //シャッフル
-  var shuffleCard = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/shuffle/?remaining=true");
-  //初回ドロー
-  response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
-  var room = await response.json();
-console.log("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
-  //4枚を描画
-  for (  var i = 0;  i < 4;  i++  ) {
-   rooms[i] = room.cards[i].code;
-   cardImage = document.createElement("img");
-   var roomDiv = document.getElementById(i+1);
-   cardImage.src = room.cards[i].image;
-   roomDiv.appendChild(cardImage);
-console.log(rooms[i]);
-  }
-});
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-document.getElementById("reset").addEventListener("click", async () => {
-  console.log("ルーム再抽出");
-  resetCount = 2;
-  for (  var i = 0;  i < 4;  i++  ) {
-   var roomDiv = document.getElementById(i+1);
-   roomDiv.innerHTML = "";
-  }
-  response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/return/?cards=" + rooms[0] +","+ rooms[1] +","+ rooms[2] +","+ rooms[3] );
-  response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
-  var room = await response.json();
-  //新規4枚を描画
-  for (  var i = 0;  i < 4;  i++  ) {
-   rooms[i] = room.cards[i].code;
-   cardImage = document.createElement("img");
-   var roomDiv = document.getElementById(i+1);
-   cardImage.src = room.cards[i].image;
-   roomDiv.appendChild(cardImage);
-   }
-   console.log("残りカード数　" + room.remaining);
-});
-
-
-document.getElementById("1").addEventListener("click", async () => {
-  console.log("1番は" + rooms[0] + "です。");
-});
-document.getElementById("2").addEventListener("click", async () => {
-  console.log("2番は" + rooms[1] + "です。");
-});
-document.getElementById("3").addEventListener("click", async () => {
-  console.log("3番は" + rooms[2] + "です。");
-});
-document.getElementById("4").addEventListener("click", async () => {
-  console.log("4番は" + rooms[3] + "です。");
-});
-</script>
