@@ -171,6 +171,9 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
     weapon = Number(rooms[i-1].substr( 0, 1 ));
     weaponDiv.innerHTML = "";
     weaponDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + rooms[i-1] + '.png">';
+    lastKill = 99;
+    killCardDiv.innerHTML = "";
+    killCardDiv.innerHTML = '<img src="./area.png">';
   }
   else{
     //敵討伐処理
@@ -201,7 +204,7 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
           weaponDiv.innerHTML = '<img src="./hand.png">';
           killCardDiv.innerHTML = "";
           killCardDiv.innerHTML = '<img src="./area.png">';
-          lastKill == 0;
+          lastKill = 0;
         }else{
           hp = hp - (kill - weapon);
           lastKill = kill;
@@ -224,7 +227,7 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
     HPDiv.innerHTML = "";
     HPDiv.innerHTML = "HP " + hp + " / 20";
     if(hp <= 0){
-      bodyDiv.innerHTML = "<h1>ゲームオーバー</h1><h1>結果</h1><h3>ＳＣＯＲＥ     " + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
+      //bodyDiv.innerHTML = "<h1>ゲームオーバー</h1><h1>結果</h1><h3>ＳＣＯＲＥ     " + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
     }
   }
   //共通処理
@@ -273,6 +276,11 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
       resetDiv.innerHTML = '<img src="./reload.png">';
     }
     }else{
+      for ( var n = 0 ; n < 4 ; n++ ){
+        if(rooms[n].indexOf('c')){
+          console.log("ifIN");
+        }
+      }
       bodyDiv.innerHTML = "<h1>ゲームクリア</h1><h1>結果</h1><h3>ＳＣＯＲＥ　　　　　" + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
     }
   }
