@@ -12,7 +12,7 @@
     <table>
         <tr>
             <td id="score">ＳＣＯＲＥ 0</td>
-            <td id="rule">ルール確認</td>
+            <td id="rule"><a href="./setumei2.html">ルール確認</a></td>
         </tr>
         <tr>
             <td id="HPNum">HP 20 / 20</td>
@@ -36,7 +36,7 @@
             <td id="reset" height="314"><img src="./reload.png"></td>
             <td id="weapon"><img src="./hand.png"></td>
             <td id="unused"><img src="./area.png"></td>
-            <td id="killCards"><img src="./area.png"></td>
+            <td id="killCard"><img src="./area.png"></td>
         </tr>
     </table>
 </div>
@@ -47,7 +47,8 @@ var rooms = new Array(4);
 var hp = 20;
 var resetCount = "初期"; //ルーム引き直し時2 どれか一つを選択した時1 次のターン開始時に値を-1
 var weapon = 0;
-var kill = 99; //倒した敵の数値
+var kill = 99; //倒す敵の数値
+var lastKill = 99; //最後に倒した敵の数値
 var score = 0;
 var heartCount = 0; //1ルームにおける回復回数
 var last = ""; //残ったCard
@@ -59,6 +60,7 @@ var drowCount= 0; //何回目の選択か
 var HPDiv = document.getElementById("HPNum");
 var resetDiv = document.getElementById("reset"); 
 var weaponDiv = document.getElementById("weapon"); 
+var killCardDiv = document.getElementById("killCard");
 
 
 
@@ -168,6 +170,54 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
   }
   else{
     //敵討伐処理
+    killCardDiv.innerHTML = "";
+    killCardDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + rooms[i-1] + '.png">';
+    kill = Number(rooms[i-1].substr( 0, 1 ));
+    if(rooms[i-1].substr( 0, 1 ) == "J"){
+      kill = 11;
+    }
+    if(rooms[i-1].substr( 0, 1 ) == "Q"){
+      kill = 12;
+    }
+    if(rooms[i-1].substr( 0, 1 ) == "K"){
+      kill = 13;
+    }
+    if(rooms[i-1].substr( 0, 1 ) == "A"){
+      kill = 14;
+    }
+    //素手
+    if(weapon == 0){
+      hp -= kill;
+    }else{
+      //敵が強い
+      if(kill > weapon){
+        if(kill > lastKill){
+          hp -= kill;
+          weaponDiv.innerHTML = "";
+          weaponDiv.innerHTML = '<img src="./hand.png">';
+          lastKill == 0;
+        }else{
+          hp = hp - (kill - weapon);
+          lastKill = kill;
+        }
+      }
+      //敵が弱い
+      if(kill <= weapon){
+        if(kill > lastKill){
+          hp -= kill;
+          weaponDiv.innerHTML = "";
+          weaponDiv.innerHTML = '<img src="./hand.png">';
+          lastKill = 0;
+        }else{
+          lastKill = kill;
+        }
+      }
+    }
+    HPDiv.innerHTML = "";
+    HPDiv.innerHTML = "HP " + hp + " / 20";
+    if(hp == 0){
+      console.log("負け");
+    }
   }
   //共通処理
   var roomDiv = document.getElementById(Number(i));
