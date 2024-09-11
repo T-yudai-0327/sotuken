@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<div>
+<div id="body">
     <!--<button id="start">スタート</button>-->
     <table>
         <tr>
@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td id="HPNum">HP 20 / 20</td>
-            <td id="HPBar">■■■■■■■■■■■■■■■■■■■■</td>
+            <td id="HPBar"></td>
         </tr>
     </table>
     <table>
@@ -51,16 +51,19 @@ var kill = 99; //倒す敵の数値
 var lastKill = 99; //最後に倒した敵の数値
 var score = 0;
 var heartCount = 0; //1ルームにおける回復回数
-var last = ""; //残ったCard
+var last = ""; //ルームで残ったCard
+var remaining = 100; //残り合計カード
 
 var deck_id = "";
 var cardImage = document.createElement("img");
 var response = "";
 var drowCount= 0; //何回目の選択か
 var HPDiv = document.getElementById("HPNum");
+var HPBarDiv = document.getElementById("HPBar");
 var resetDiv = document.getElementById("reset"); 
 var weaponDiv = document.getElementById("weapon"); 
 var killCardDiv = document.getElementById("killCard");
+var bodyDiv = document.getElementById("body");
 
 
 
@@ -85,6 +88,7 @@ console.log("読み込み中");
    roomDiv.appendChild(cardImage);
   }
   resetCount = "可能";
+  remaining = room.remaining;
 console.log("読み込み終わり");
 });
 
@@ -195,6 +199,8 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
           hp -= kill;
           weaponDiv.innerHTML = "";
           weaponDiv.innerHTML = '<img src="./hand.png">';
+          killCardDiv.innerHTML = "";
+          killCardDiv.innerHTML = '<img src="./area.png">';
           lastKill == 0;
         }else{
           hp = hp - (kill - weapon);
@@ -207,6 +213,8 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
           hp -= kill;
           weaponDiv.innerHTML = "";
           weaponDiv.innerHTML = '<img src="./hand.png">';
+          killCardDiv.innerHTML = "";
+          killCardDiv.innerHTML = '<img src="./area.png">';
           lastKill = 0;
         }else{
           lastKill = kill;
@@ -215,8 +223,8 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
     }
     HPDiv.innerHTML = "";
     HPDiv.innerHTML = "HP " + hp + " / 20";
-    if(hp == 0){
-      console.log("負け");
+    if(hp <= 0){
+      bodyDiv.innerHTML = "<h1>ゲームオーバー</h1><h1>結果</h1><h3>ＳＣＯＲＥ     " + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
     }
   }
   //共通処理
@@ -225,16 +233,26 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
   rooms[i-1] = "empty";
   if(drowCount == 3){
     //3枚選択後の処理
-    for ( var n = 0 ; n < 4 ; n++ ){
+    heartCount = 0;
+    for (  var n = 0;  n < 4;  n++  ) {
+      var roomDiv = document.getElementById(n+1);
+      roomDiv.innerHTML = "";
+      roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/back.png">';
+      roomDiv.appendChild(cardImage);
+    }
+    if(remaining  != 0){
+       for ( var n = 0 ; n < 4 ; n++ ){
       if(rooms[n] != "empty"){
         last = rooms[n];
         var roomDiv = document.getElementById(4);
-        roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + last + '.png">';
+        roomDiv.innerHTML = "";
+        roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/back.png">';
       }
     }
     //新規3枚を描画
     response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=3");
     var room = await response.json();
+    remaining = room.remaining;
     for (  var n = 0;  n < 3;  n++  ) {
       rooms[n] = room.cards[n].code;
       cardImage = document.createElement("img");
@@ -243,6 +261,8 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
       roomDiv.innerHTML = "";
       roomDiv.appendChild(cardImage);
     }
+    var roomDiv = document.getElementById(4);
+    roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + last + '.png">';
     rooms[3] = last;
     drowCount = 0;
     if(resetCount == "手動不可"){
@@ -252,7 +272,9 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
       resetCount = "可能";
       resetDiv.innerHTML = '<img src="./reload.png">';
     }
-    //再抽出の値変更if
+    }else{
+      bodyDiv.innerHTML = "<h1>ゲームクリア</h1><h1>結果</h1><h3>ＳＣＯＲＥ　　　　　" + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
+    }
   }
 }
 </script>
