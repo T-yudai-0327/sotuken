@@ -5,21 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>遊び方</title>
     <link rel="stylesheet" href="Scoundrel.css">
-    <script>
-        window.onload = function() {
-            // スタートボタンの非表示処理
-            // localStorage からフラグを取得
-            if (localStorage.getItem("hideStart") === "true") {
-                // スタートボタンを非表示にする処理を追加
-                const startButton = document.getElementById("start");
-                if (startButton) {
-                    startButton.style.display = "none";
-                }
-                // フラグを削除
-                localStorage.removeItem("hideStart");
-            }
-        };
-    </script>
 </head>
 <body>
     <header>
@@ -33,7 +18,7 @@
                プレイヤーはフィールドから1枚ずつカードを選び使用します。<br>
                フィールドが残り1枚になると、再びフィールドが4枚になるようにカードが<br>
                補充されます。これを繰り返していき、ダンジョンとフィールドのカードが<br>
-               なくなるか、自身の体力が0になったらゲーム終了です。<br>
+               最後の1枚になるか、自身の体力が0になったらゲーム終了です。<br>
                モンスターカードを使用すると戦闘が開始されます。<br>
                使用する前に武器やポーションのカードを使用して攻略の準備をしましょう!
             </p>
