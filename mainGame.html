@@ -7,30 +7,36 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <button id="start">スタート</button> <!-- スタートボタン -->
+<div>
+    <!--<button id="start">スタート</button>-->
     <table>
         <tr>
-            <td id="score">0</td>
+            <td id="score">ＳＣＯＲＥ 0</td>
             <td id="rule">ルール確認</td>
         </tr>
         <tr>
-            <td id="HPNum">HP</td>
+            <td id="HPNum">HP 20 / 20</td>
             <td id="HPBar">■■■■■■■■■■■■■■■■■■■■</td>
         </tr>
     </table>
     <table>
         <tr>
-            <td id="1" height="314"></td>
-            <td id="2"></td>
-            <td id="3"></td>
-            <td id="4"></td>
+            <td id="1" height="322"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
+            <td id="2"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
+            <td id="3"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
+            <td id="4"><img src="https://deckofcardsapi.com/static/img/back.png"></td>
+        </tr>
+        <tr>
+            <td>ダンジョン</td>
+            <td>現在の武器</td>
+            <td></td>
+            <td>倒した敵</td>
         </tr>
         <tr>
             <td id="reset" height="314"><img src="./reload.png"></td>
-            <td id="weapon"><img src=""></td>
-            <td id="no"></td>
-            <td id="killCards" style="background-color:#dcdcdc; border-radius:10px;"></td>
+            <td id="weapon"><img src="./hand.png"></td>
+            <td id="unused"><img src="./area.png"></td>
+            <td id="killCards"><img src="./area.png"></td>
         </tr>
     </table>
 </div>
@@ -39,65 +45,52 @@
 
 var rooms = new Array(4);
 var hp = 20;
-var resetCount = 0; //ルーム引き直し時2 どれか一つを選択した時1 次のターン開始時に値を-1
+var resetCount = "初期"; //ルーム引き直し時2 どれか一つを選択した時1 次のターン開始時に値を-1
 var weapon = 0;
 var kill = 99; //倒した敵の数値
 var score = 0;
+var heartCount = 0; //1ルームにおける回復回数
+var last = ""; //残ったCard
 
 var deck_id = "";
 var cardImage = document.createElement("img");
 var response = "";
-var drowCount= 0;
+var drowCount= 0; //何回目の選択か
+var HPDiv = document.getElementById("HPNum");
+var resetDiv = document.getElementById("reset"); 
+var weaponDiv = document.getElementById("weapon"); 
 
-// スタートボタンと同じ処理を自動で実行
-async function startGame() {
-    // スタートボタンを非表示にする
-    document.getElementById("start").style.display = "none";
-    
-    response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,JS,QS,KS,AD,2D,3D,4D,5D,6D,7D,8D,9D,10D,JD,QD,KD,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,JC,QC,KC,2H,3H,4H,5H,6H,7H,8H,9H,10H");
-    var startCard = await response.json();
-    deck_id = startCard.deck_id;
-    console.log(deck_id);
 
-    // シャッフル
-    await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/shuffle/?remaining=true");
 
-    // 初回ドロー
-    response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
-    var room = await response.json();
-    console.log("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
-
-    // 4枚のカードを描画
-    for (var i = 0; i < 4; i++) {
-        rooms[i] = room.cards[i].code;
-        cardImage = document.createElement("img");
-        var roomDiv = document.getElementById(i+1);
-        cardImage.src = room.cards[i].image;
-        roomDiv.appendChild(cardImage);
-        console.log(rooms[i]);
-    }
-}
-
-// ページがロードされた時、自動でスタートボタンを押す処理をチェック
-window.onload = function() {
-    // URLのクエリパラメータを取得
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('autoStart') === 'true') {
-        // autoStartがtrueなら、スタートボタンの処理を実行
-        startGame();
-    }
-
-    // 通常のスタートボタンのクリック処理
-    document.getElementById("start").addEventListener("click", startGame);
-};
+document.addEventListener('DOMContentLoaded', async () => {
+console.log("読み込み中");
+  //山札生成
+  response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?cards=AS,2S,3S,4S,5S,6S,7S,8S,9S,10S,JS,QS,KS,2D,3D,4D,5D,6D,7D,8D,9D,10D,AC,2C,3C,4C,5C,6C,7C,8C,9C,10C,JC,QC,KC,2H,3H,4H,5H,6H,7H,8H,9H,10H");
+  var startCard = await response.json();
+  deck_id = startCard.deck_id;
+  //シャッフル
+  var shuffleCard = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/shuffle/?remaining=true");
+  //初回ドロー
+  response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=4");
+  var room = await response.json();
+  //4枚を描画
+  for (  var i = 0;  i < 4;  i++  ) {
+   rooms[i] = room.cards[i].code;
+   cardImage = document.createElement("img");
+   var roomDiv = document.getElementById(i+1);
+   cardImage.src = room.cards[i].image;
+   roomDiv.innerHTML = "";
+   roomDiv.appendChild(cardImage);
+  }
+  resetCount = "可能";
+console.log("読み込み終わり");
+});
 
 document.getElementById("reset").addEventListener("click", async () => {
-  console.log("ルーム再抽出");
-  if(resetCount == 0){
+  if(resetCount == "可能"){
     for (  var i = 0;  i < 4;  i++  ) {
       var roomDiv = document.getElementById(i+1);
-      var resetDiv = document.getElementById("reset"); 
-      roomDiv.innerHTML = "";
+      roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/back.png">';
       resetDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/back.png">';
     }
     response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/return/?cards=" + rooms[0] +","+ rooms[1] +","+ rooms[2] +","+ rooms[3] );
@@ -109,34 +102,109 @@ document.getElementById("reset").addEventListener("click", async () => {
       cardImage = document.createElement("img");
       var roomDiv = document.getElementById(i+1);
       cardImage.src = room.cards[i].image;
+      roomDiv.innerHTML = "";
       roomDiv.appendChild(cardImage);
     }
-    console.log("残りカード数　" + room.remaining);
-    resetCount = 2;
+    resetCount = "手動不可";
   }
 
 });
 
 
 document.getElementById("1").addEventListener("click", async () => {
-  console.log("1番は" + rooms[0] + "です。");
-  rooms[0] = "null";
-  drowCount++;
-  if(drowCount == 3){
-    console.log("3枚選択");
-    //カード3枚抽出
-    drowCount = 0;
+  if(rooms[0] == "empty"){
+    console.log("処理無し");
+  }else{
+    selectCard("1");
   }
 });
 document.getElementById("2").addEventListener("click", async () => {
-  console.log("2番は" + rooms[1] + "です。");
+  if(rooms[1] == "empty"){
+    console.log("処理無し");
+  }else{
+    selectCard("2");
+  }
 });
 document.getElementById("3").addEventListener("click", async () => {
-  console.log("3番は" + rooms[2] + "です。");
+  if(rooms[2] == "empty"){
+    console.log("処理無し");
+  }else{
+    selectCard("3");
+  }
 });
 document.getElementById("4").addEventListener("click", async () => {
-  console.log("4番は" + rooms[3] + "です。");
+  if(rooms[3] == "empty"){
+    console.log("処理無し");
+  }else{
+    selectCard("4");
+  }
 });
+
+
+async function selectCard(i) {
+drowCount++;
+if(resetCount == "可能"){
+  resetCount = "自動不可";
+  resetDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/back.png">';
+}
+if((rooms[i-1].substr( 1, 1 )) == "H"){
+    //回復処理
+    if(heartCount == 0){
+      heartCount = 1;
+      hp += Number(rooms[i-1].substr( 0, 1 ));
+      if(hp >= 21){
+        hp = 20;
+      }
+      HPDiv.innerHTML = "";
+      HPDiv.innerHTML = "HP " + hp + " / 20";
+    }
+  }
+  else 
+  if((rooms[i-1].substr( 1, 1 )) == "D"){
+    //武器取得処理
+    weapon = Number(rooms[i-1].substr( 0, 1 ));
+    weaponDiv.innerHTML = "";
+    weaponDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + rooms[i-1] + '.png">';
+  }
+  else{
+    //敵討伐処理
+  }
+  //共通処理
+  var roomDiv = document.getElementById(Number(i));
+  roomDiv.innerHTML = "";
+  rooms[i-1] = "empty";
+  if(drowCount == 3){
+    //3枚選択後の処理
+    for ( var n = 0 ; n < 4 ; n++ ){
+      if(rooms[n] != "empty"){
+        last = rooms[n];
+        var roomDiv = document.getElementById(4);
+        roomDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + last + '.png">';
+      }
+    }
+    //新規3枚を描画
+    response = await fetch("https://deckofcardsapi.com/api/deck/" + deck_id + "/draw/?count=3");
+    var room = await response.json();
+    for (  var n = 0;  n < 3;  n++  ) {
+      rooms[n] = room.cards[n].code;
+      cardImage = document.createElement("img");
+      var roomDiv = document.getElementById(n+1);
+      cardImage.src = room.cards[n].image;
+      roomDiv.innerHTML = "";
+      roomDiv.appendChild(cardImage);
+    }
+    rooms[3] = last;
+    drowCount = 0;
+    if(resetCount == "手動不可"){
+      resetCount = "自動不可";
+    }else
+    if(resetCount == "自動不可"){
+      resetCount = "可能";
+      resetDiv.innerHTML = '<img src="./reload.png">';
+    }
+    //再抽出の値変更if
+  }
+}
 </script>
 
 </body>
