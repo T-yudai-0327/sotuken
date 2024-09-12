@@ -11,8 +11,8 @@
     <!--<button id="start">スタート</button>-->
     <table>
         <tr>
-            <td id="score">ＳＣＯＲＥ 0</td>
-            <td id="rule"><a href="リンク先のURL" onclick="window.open('./setumei2.html', '新規ウィンドウs','width=1280,height=720,noopener'); return false;">遊び方</a></td>
+            <td id="score"></td>
+            <td id="rule"><a href="./setumei2.html">ルール確認</a></td>
         </tr>
         <tr>
             <td id="HPNum">HP 20 / 20</td>
@@ -65,7 +65,11 @@ var weaponDiv = document.getElementById("weapon");
 var killCardDiv = document.getElementById("killCard");
 var bodyDiv = document.getElementById("body");
 
-
+//スコアを更新する関数
+function updateScore(points) {
+    score += points;
+    scoreDiv.innerHTML = "ＳＣＯＲＥ " + score;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
 console.log("読み込み中");
@@ -163,6 +167,7 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
       }
       HPDiv.innerHTML = "";
       HPDiv.innerHTML = "HP " + hp + " / 20";
+       updateScore(5); // 回復時にスコア5点加算
     }
   }
   else 
@@ -171,9 +176,7 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
     weapon = Number(rooms[i-1].substr( 0, 1 ));
     weaponDiv.innerHTML = "";
     weaponDiv.innerHTML = '<img src="https://deckofcardsapi.com/static/img/' + rooms[i-1] + '.png">';
-    lastKill = 99;
-    killCardDiv.innerHTML = "";
-    killCardDiv.innerHTML = '<img src="./area.png">';
+     updateScore(10); // 武器取得時にスコア10点加算
   }
   else{
     //敵討伐処理
@@ -204,7 +207,7 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
           weaponDiv.innerHTML = '<img src="./hand.png">';
           killCardDiv.innerHTML = "";
           killCardDiv.innerHTML = '<img src="./area.png">';
-          lastKill = 0;
+          lastKill == 0;
         }else{
           hp = hp - (kill - weapon);
           lastKill = kill;
@@ -227,9 +230,11 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
     HPDiv.innerHTML = "";
     HPDiv.innerHTML = "HP " + hp + " / 20";
     if(hp <= 0){
-      //bodyDiv.innerHTML = "<h1>ゲームオーバー</h1><h1>結果</h1><h3>ＳＣＯＲＥ     " + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
+      bodyDiv.innerHTML = "<h1>ゲームオーバー</h1><h1>結果</h1><h3>ＳＣＯＲＥ     " + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
     }
+    updateScore(kill * 2); // 倒した敵に応じてスコア加算（例: 2倍）
   }
+
   //共通処理
   var roomDiv = document.getElementById(Number(i));
   roomDiv.innerHTML = "";
@@ -276,11 +281,6 @@ if((rooms[i-1].substr( 1, 1 )) == "H"){
       resetDiv.innerHTML = '<img src="./reload.png">';
     }
     }else{
-      for ( var n = 0 ; n < 4 ; n++ ){
-        if(rooms[n].indexOf('c')){
-          console.log("ifIN");
-        }
-      }
       bodyDiv.innerHTML = "<h1>ゲームクリア</h1><h1>結果</h1><h3>ＳＣＯＲＥ　　　　　" + score + '</h3><p><a href="./mainGame.html">再挑戦</a></p>';
     }
   }
